@@ -15,3 +15,4 @@ function NewPost(props) {
 }
 
 export default NewPost;
+7;
