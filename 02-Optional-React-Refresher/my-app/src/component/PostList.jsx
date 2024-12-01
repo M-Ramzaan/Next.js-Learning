@@ -5,26 +5,12 @@ import Modal from "./Modal";
 import { useState } from "react";
 
 function PostsList({ isPosting, onStopPosting }) {
-  const [enteredBody, setEnteredBody] = useState("");
-  const [enteredAuthor, setEnteredAuthor] = useState("");
-
-  function bodyChangeHandler(event) {
-    setEnteredBody(event.target.value);
-  }
-
-  function authorChangeHandler(event) {
-    setEnteredAuthor(event.target.value);
-  }
-
   let modalContent = null;
 
   if (isPosting) {
     modalContent = (
       <Modal onClose={onStopPosting}>
-        <NewPost
-          onBodyChange={bodyChangeHandler}
-          onAuthorChange={authorChangeHandler}
-        />
+        <NewPost onCancel={onStopPosting} />
       </Modal>
     );
   }
@@ -33,9 +19,6 @@ function PostsList({ isPosting, onStopPosting }) {
     <>
       {modalContent}
       <ul className={classes.posts}>
-        <li>
-          <Post author={enteredAuthor} body={enteredBody} />
-        </li>
         <li>
           <Post author="Mirha" body="Please check out the full course!" />
         </li>
