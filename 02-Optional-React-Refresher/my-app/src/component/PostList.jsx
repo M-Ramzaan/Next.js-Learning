@@ -2,15 +2,39 @@ import Post from "./Post";
 import NewPost from "./NewPost";
 import classes from "./PostList.module.css";
 import Modal from "./Modal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function PostsList({ isPosting, onStopPosting }) {
-  let modalContent = null;
+  const [posts, setPost] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
 
+  useEffect(() => {
+    async function fetchPosts() {
+      setIsFetching(true);
+      const response = await fetch("http://localhost:8080/posts");
+      const resData = await response.json();
+      setPost(resData.posts);
+      setIsFetching(false);
+    }
+    fetchPosts();
+  }, []);
+
+  function addPostHandler(postData) {
+    fetch("http://localhost:8080/posts", {
+      method: "POST",
+      body: JSON.stringify(postData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    setPost((existingPost) => [postData, ...existingPost]);
+  }
+
+  let modalContent = null;
   if (isPosting) {
     modalContent = (
       <Modal onClose={onStopPosting}>
-        <NewPost onCancel={onStopPosting} />
+        <NewPost onCancel={onStopPosting} onAddPost={addPostHandler} />
       </Modal>
     );
   }
@@ -18,11 +42,24 @@ function PostsList({ isPosting, onStopPosting }) {
   return (
     <>
       {modalContent}
-      <ul className={classes.posts}>
-        <li>
-          <Post author="Mirha" body="Please check out the full course!" />
-        </li>
-      </ul>
+      {!isFetching && posts.length > 0 && (
+        <ul className={classes.posts}>
+          {posts.map((post) => (
+            <Post key={post.body} author={post.author} body={post.body} />
+          ))}
+        </ul>
+      )}
+      {!isFetching && posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>There is no posts till yet.</h2>
+          <p>Start adding some.</p>
+        </div>
+      )}
+      {isFetching && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <p>Loading Posts..</p>
+        </div>
+      )}
     </>
   );
 }
