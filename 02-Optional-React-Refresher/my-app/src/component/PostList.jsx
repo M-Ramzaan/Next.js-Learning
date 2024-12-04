@@ -1,7 +1,5 @@
 import Post from "./Post";
-import NewPost from "./NewPost";
 import classes from "./PostList.module.css";
-import Modal from "./Modal";
 import { useState, useEffect } from "react";
 
 function PostsList({ isPosting, onStopPosting }) {
@@ -30,18 +28,8 @@ function PostsList({ isPosting, onStopPosting }) {
     setPost((existingPost) => [postData, ...existingPost]);
   }
 
-  let modalContent = null;
-  if (isPosting) {
-    modalContent = (
-      <Modal onClose={onStopPosting}>
-        <NewPost onCancel={onStopPosting} onAddPost={addPostHandler} />
-      </Modal>
-    );
-  }
-
   return (
     <>
-      {modalContent}
       {!isFetching && posts.length > 0 && (
         <ul className={classes.posts}>
           {posts.map((post) => (
